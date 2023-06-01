@@ -2,9 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:HorizonCalendarExample/HorizonCalendarExample.xcodeproj">
+      location = "group:../HorizonCalendar.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:../HorizonCalendar.xcodeproj">
+      location = "group:HorizonCalendarExample/HorizonCalendarExample.xcodeproj">
    </FileRef>
 </Workspace>

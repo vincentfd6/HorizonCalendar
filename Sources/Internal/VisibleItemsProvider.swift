@@ -293,7 +293,11 @@ final class VisibleItemsProvider {
       switch layoutItem.itemType {
       case .monthHeader(let _month):
         month = _month
-        calendarItemModel = self.content.monthHeaderItemProvider(month)
+          if let model = self.content.monthHeaderItemProvider(month) {
+              calendarItemModel = model
+          } else {
+              return
+          }
       case .day(let day):
         month = day.month
         calendarItemModel = self.content.dayItemProvider(day)
@@ -644,10 +648,10 @@ final class VisibleItemsProvider {
 
         let itemType = VisibleItem.ItemType.layoutItemType(layoutItem.itemType)
 
-        let calendarItemModel: AnyCalendarItemModel
+        let calendarItemModel: AnyCalendarItemModel?
         switch layoutItem.itemType {
         case .monthHeader(let month):
-          calendarItemModel = calendarItemModelCache.value(
+          calendarItemModel = calendarItemModelCache.optionalValue(
             for: itemType,
             missingValueProvider: {
               previousCalendarItemModelCache?[itemType]
@@ -730,6 +734,10 @@ final class VisibleItemsProvider {
             framesForVisibleDays[day] = layoutItem.frame
           }
         }
+          
+          guard let calendarItemModel else {
+              return
+          }
 
         let visibleItem = VisibleItem(
           calendarItemModel: calendarItemModel,

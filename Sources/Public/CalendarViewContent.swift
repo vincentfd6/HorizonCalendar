@@ -217,7 +217,7 @@ public final class CalendarViewContent {
   ///   - month: The `Month` for which to provide a month header item.
   /// - Returns: A mutated `CalendarViewContent` instance with a new month header item provider.
   public func monthHeaderItemProvider(
-    _ monthHeaderItemProvider: @escaping (_ month: Month) -> AnyCalendarItemModel)
+    _ monthHeaderItemProvider: @escaping (_ month: Month) -> AnyCalendarItemModel?)
     -> CalendarViewContent
   {
     self.monthHeaderItemProvider = monthHeaderItemProvider
@@ -395,7 +395,7 @@ public final class CalendarViewContent {
   private(set) var horizontalDayMargin: CGFloat = 0
   private(set) var daysOfTheWeekRowSeparatorOptions: DaysOfTheWeekRowSeparatorOptions?
 
-  private(set) var monthHeaderItemProvider: (Month) -> AnyCalendarItemModel
+  private(set) var monthHeaderItemProvider: (Month) -> AnyCalendarItemModel?
   private(set) var dayOfWeekItemProvider: (
     _ month: Month?,
     _ weekdayIndex: Int)

@@ -58,6 +58,10 @@ final class SingleDaySelectionDemoViewController: BaseDemoViewController {
       .interMonthSpacing(24)
       .verticalDayMargin(8)
       .horizontalDayMargin(8)
+      
+      .monthHeaderItemProvider({ month in
+          return nil
+      })
 
       .dayItemProvider { [calendar, dayDateFormatter] day in
         var invariantViewProperties = DayView.InvariantViewProperties.baseInteractive

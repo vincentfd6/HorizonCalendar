@@ -495,6 +495,17 @@ public final class CalendarView: UIView {
   }
 
   // MARK: Private
+    
+    private lazy var monthHeaderDateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = calendar.locale
+        formatter.dateFormat = DateFormatter.dateFormat(
+            fromTemplate: "MMMM yyyy",
+            options: 0,
+            locale: calendar.locale ?? Locale.current)
+        return formatter
+    }()
 
   private let reuseManager = ItemViewReuseManager()
   private let subviewInsertionIndexTracker = SubviewInsertionIndexTracker()
@@ -694,16 +705,21 @@ public final class CalendarView: UIView {
         interMonthSpacing: content.interMonthSpacing)
     }
 
-    let firstMonthHeaderItemModel = content.monthHeaderItemProvider(
-      content.monthRange.lowerBound)
-    let firstMonthHeader = firstMonthHeaderItemModel._makeView()
-    firstMonthHeaderItemModel._setContent(onViewOfSameType: firstMonthHeader)
-
-    let size = firstMonthHeader.systemLayoutSizeFitting(
-      CGSize(width: monthWidth, height: 0),
-      withHorizontalFittingPriority: .required,
-      verticalFittingPriority: .fittingSizeLevel)
-    return size.height
+    if let firstMonthHeaderItemModel = content.monthHeaderItemProvider(
+        content.monthRange.lowerBound) {
+        let firstMonthHeader = firstMonthHeaderItemModel._makeView()
+        firstMonthHeaderItemModel._setContent(onViewOfSameType: firstMonthHeader)
+        
+        let size = firstMonthHeader.systemLayoutSizeFitting(
+            CGSize(width: monthWidth, height: 0),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel)
+        
+        return size.height
+    }
+      
+    return 0.0
+    
   }
 
   private func updateVisibleViews(
@@ -1167,12 +1183,18 @@ extension CalendarView {
 
     scroll(toMonthContaining: targetMonthDate, scrollPosition: scrollPosition, animated: false)
 
-    let targetMonthItem = content.monthHeaderItemProvider(targetMonth)
-    let targetMonthView = targetMonthItem._makeView()
-    targetMonthItem._setContent(onViewOfSameType: targetMonthView)
-    let accessibilityScrollText = targetMonthView.accessibilityLabel
-    UIAccessibility.post(notification: .pageScrolled, argument: accessibilityScrollText)
-
+      if let targetMonthItem = content.monthHeaderItemProvider(targetMonth) {
+          let targetMonthView = targetMonthItem._makeView()
+          targetMonthItem._setContent(onViewOfSameType: targetMonthView)
+          let accessibilityScrollText = targetMonthView.accessibilityLabel
+          UIAccessibility.post(notification: .pageScrolled, argument: accessibilityScrollText)
+      } else {
+         
+         let firstDateInMonth = calendar.firstDate(of: targetMonth)
+         let monthText = monthHeaderDateFormatter.string(from: firstDateInMonth)
+         UIAccessibility.post(notification: .pageScrolled, argument: monthText)
+      }
+    
     return true
   }
 
